@@ -414,8 +414,8 @@ Init
 	movlw	B'00000001'
 	movwf	T1CON
 	
-	banksel	T2CON		;Timer2 overflows after 2.048 ms
-	movlw	B'00000111'
+	banksel	T2CON		;Timer2 overflows after 3.072 ms
+	movlw	B'00101110'
 	movwf	T2CON
 	
 	banksel	ANSELA		;All pins digital, not analog
@@ -2380,6 +2380,7 @@ AdbFsaTxBitU
 	btfss	BSR,0		;If we're here because of the falling edge we
 	retlw	low AdbFsaTxBitU; just triggered, ignore and return posthaste
 	bsf	TRISA,AP_APIN	;Release the pin
+	DELAY	2		;Wait for it to actually go high
 	movlb	0		;If the pin is still low, we've collided; set
 	btfsc	PORTA,AP_APIN	; the collision flag, clear the transmit flag,
 	bra	AFTxBU0		; and go back to waiting for an attention pulse
