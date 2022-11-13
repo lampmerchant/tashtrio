@@ -2336,6 +2336,8 @@ AdbFsaSrqEnd
 
 AdbFsaTlt
 	bcf	AP_FLAG,AP_RISE	;No longer need to catch rising edges
+	movlw	-128		;Shorten the timeout period to 512 us, which is
+	movwf	TMR0		; still too long to wait for a transmission
 	btfss	AP_FLAG,AP_TXI	;If the user doesn't wish to transmit, just
 	retlw	low AdbFsaTltEnd; wait for data to start
 	movf	TMR1H,W		;Get a pseudorandom between 0 and 15, adjust it
