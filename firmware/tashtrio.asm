@@ -541,6 +541,7 @@ SvcAdbCommand
 	movlw	0		;Call into the initial state of the selected
 	callw			; device's state machine
 	movwf	AU_FSAP		;On returning, save the address returned in W
+	;TODO the device being serviced should not call for SRQ
 SvcAdC0	bcf	AP_FLAG,AP_SRQ	;If any device is calling for service, set the
 	swapf	AU_FLAG,W	; ADB peripheral's SRQ flag
 	andwf	AU_FLAG,W	; "
@@ -2063,7 +2064,7 @@ ADFsaLstn06
 
 ADFsaLstn07
 	movf	AP_BUF,W	;If the last byte is a count rather than data,
-	andlw	B'11111000'	; skip ahead
+	andlw	B'11100000'	; skip ahead
 	xorlw	B'10000000'	; "
 	btfsc	STATUS,Z	; "
 	bra	ADFL070		; "
@@ -2170,8 +2171,8 @@ ADFT0B1	incf	AU_TEMP,F	;Increment the counter of bytes sent
 	movf	AD_RPOP,W	;Load the RX queue pop point into FSR0
 	movwf	FSR0L		; "
 	movf	INDF0,W		;If the upper nibble of the next byte on the
-	andlw	B'11110000'	; queue is anything but 0b1000, we can send it
-	xorlw	B'10000000'	; as our eighth byte and have it interpreted
+	andlw	B'11100000'	; queue is anything but 0x8 or 0x9, we can send
+	xorlw	B'10000000'	; it as our eighth byte and have it interpreted
 	btfss	STATUS,Z	; as data
 	retlw	low ADFsaTalk0Fn; "
 	bsf	AU_FLAG,AU_SRMD	;Else, raise SRQ flag so it gets sent later
@@ -2336,8 +2337,8 @@ AdbFsaSrqEnd
 
 AdbFsaTlt
 	bcf	AP_FLAG,AP_RISE	;No longer need to catch rising edges
-	movlw	-128		;Shorten the timeout period to 512 us, which is
-	movwf	TMR0		; still too long to wait for a transmission
+	movlw	-65		;Shorten the timeout period to 260 us, which is
+	movwf	TMR0		; slightly longer than Tlt is expected to be
 	btfss	AP_FLAG,AP_TXI	;If the user doesn't wish to transmit, just
 	retlw	low AdbFsaTltEnd; wait for data to start
 	movf	TMR1H,W		;Get a pseudorandom between 0 and 15, adjust it
