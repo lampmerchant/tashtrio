@@ -21,3 +21,5 @@ PS/2 mice require their host to send a command byte to start the flow of mouse m
 ## Building Firmware
 
 Building the firmware requires Microchip MPASM, which is included with their development environment, MPLAB.  Note that you **must** use MPLAB X version 5.35 or earlier or MPLAB 8 as later versions of MPLAB X have removed MPASM.
+
+The firmware can also be built using gpasm, an MPASM-compatible assembler that is part of the [gputils](https://gputils.sourceforge.io/) project.  Please note, however, that the release builds are built using MPASM and compatibility with gpasm is not tested.
